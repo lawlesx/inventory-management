@@ -2,7 +2,7 @@ import { FC, useState } from 'react'
 import { useQueryClient } from 'react-query'
 import EditModal from './EditModal'
 import { EditIcon, EyeIcon, EyeOffIcon, TrashIcon } from './icons'
-import { Data, InventoryStats } from './interface'
+import { Data } from './interface'
 
 const ListingRow: FC<{ data: Data; isAdmin: boolean }> = ({ data, isAdmin }) => {
   const queryClient = useQueryClient()
@@ -15,33 +15,10 @@ const ListingRow: FC<{ data: Data; isAdmin: boolean }> = ({ data, isAdmin }) => 
       'inventory-data',
       (oldData) => oldData?.filter((item) => item.name !== data.name) as Data[]
     )
-
-    queryClient.setQueryData<InventoryStats>('inventory-stats', (oldData) => {
-      if (oldData) {
-        return {
-          ...oldData,
-          totalProduct: oldData.totalProduct - 1,
-          outOfStock: data.quantity === 0 ? oldData.outOfStock - 1 : oldData.outOfStock,
-          totalStoreValue: `$${Number(oldData.totalStoreValue.replace('$', '')) - Number(data.value.replace('$', ''))}`,
-        } as InventoryStats
-      }
-    })
   }
 
   const handleDisable = () => {
     setIsDisabled((prev) => !prev)
-    queryClient.setQueryData<InventoryStats>('inventory-stats', (oldData) => {
-      if (oldData) {
-        return {
-          ...oldData,
-          totalProduct: isDisabled ? oldData.totalProduct + 1 : oldData.totalProduct - 1,
-          outOfStock: isDisabled ? oldData.outOfStock - 1 : oldData.outOfStock + 1,
-          totalStoreValue: isDisabled
-            ? `$${Number(oldData.totalStoreValue.replace('$', '')) + Number(data.value.replace('$', ''))}`
-            : `$${Number(oldData.totalStoreValue.replace('$', '')) - Number(data.value.replace('$', ''))}`,
-        } as InventoryStats
-      }
-    })
   }
 
   return (
