@@ -15,6 +15,17 @@ const ListingRow: FC<{ data: Data; isAdmin: boolean }> = ({ data, isAdmin }) => 
       'inventory-data',
       (oldData) => oldData?.filter((item) => item.name !== data.name) as Data[]
     )
+
+    queryClient.setQueryData<InventoryStats>('inventory-stats', (oldData) => {
+      if (oldData) {
+        return {
+          ...oldData,
+          totalProduct: oldData.totalProduct - 1,
+          outOfStock: data.quantity === 0 ? oldData.outOfStock - 1 : oldData.outOfStock,
+          totalStoreValue: `$${Number(oldData.totalStoreValue.replace('$', '')) - Number(data.value.replace('$', ''))}`,
+        } as InventoryStats
+      }
+    })
   }
 
   const handleDisable = () => {

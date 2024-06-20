@@ -6,7 +6,7 @@ const useInventoryStats = () => {
   const { data } = useInventoryData()
 
   return useQuery(
-    'inventory-stats',
+    ['inventory-stats', data],
     () => {
       const totalProduct = data?.length
       const totalStoreValue = '$' + data?.reduce((acc, item) => acc + Number(item.value.replace('$', '')), 0)
